@@ -1855,7 +1855,7 @@ class ExcelReport:
             wb.Save()
             # excel.Quit()
 
-    def variable_profiling(self, summary_path=None, numerical_binning=None, dep_var=None, depth=None, no_of_bins=None, ordinal_binning_type='kprototype', max_threshold=10, min_threshold=5, tolerence=2, flag='ignore'):
+    def variable_profiling(self, summary_path=None, numerical_binning=None, dep_var=None, depth=None, no_of_bins=None, ordinal_binning_type='kprototype', max_threshold=10, min_threshold=5, tolerence=2, flag='ignore', min_cluster_size=0.05, max_clusters=10):
         """
         This function calls all the required function to perform variable profiling
 
@@ -1872,7 +1872,7 @@ class ExcelReport:
         """
         self.__transform(treatment_file=summary_path)
         self.__create_binned_data(func=numerical_binning, dep_var=dep_var, depth=depth, no_of_bins=no_of_bins)
-        self.__create_cat_binned_data(file_path=summary_path, dependant_target_variable=dep_var, no_of_bins=no_of_bins, ordinal_binning=ordinal_binning_type, max_thre=max_threshold, min_thre=min_threshold, tolerence=tolerence, flag=flag)
+        self.__create_cat_binned_data(file_path=summary_path, dependant_target_variable=dep_var, no_of_bins=no_of_bins, ordinal_binning=ordinal_binning_type, max_thre=max_threshold, min_thre=min_threshold, tolerence=tolerence, flag=flag, min_cluster_size=min_cluster_size, max_clusters=max_clusters)
         self.__vba_check(summary_path)
         print('Saved')
 
