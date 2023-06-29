@@ -201,9 +201,7 @@ class ExcelReport:
             for cell in row:
                 cell.alignment = Alignment(horizontal='center', vertical='center')
         wb.save(self.__file_name + '_eda_report_2.xlsx')
-        # return self.df
 
-    # def impute(self,col,mth):#mean, median, mode, ffill,bfill
     # missing value treatments
     def __mean_imputation(self, col):
         """
@@ -212,7 +210,6 @@ class ExcelReport:
         :param col: Column Name
         """
         self.df[col].fillna(round(self.df[col].mean(), 2), inplace=True)
-        # return self.df
 
     def __median_imputation(self, col):
         """
@@ -222,7 +219,6 @@ class ExcelReport:
         """
         median = self.df[col].median()
         self.df[col].fillna(round(median, 2), inplace=True)
-        # return self.df
 
     def __drop_rows(self, col):
         """
@@ -231,7 +227,6 @@ class ExcelReport:
         :param col: Column Name
         """
         self.df.dropna(subset=[col], inplace=True)
-        # return self.df
 
     def __drop_column(self, col):
         """
@@ -240,7 +235,6 @@ class ExcelReport:
         :param col: Column Name
         """
         self.df.drop(col, axis=1, inplace=True)
-        # return self.df
 
     def __mode_imputation(self, col):
         """
@@ -250,7 +244,6 @@ class ExcelReport:
         """
         mode = self.df[col].mode()[0]
         self.df[col].fillna(mode, inplace=True)
-        # return self.df
 
     def __arbitrary_val(self, col, val):
         """
@@ -260,7 +253,6 @@ class ExcelReport:
         :param val: Value to impute in place of missing values
         """
         self.df[col].fillna(val, inplace=True)
-        # return self.df
 
     def __linear_interpolate(self, col):
         """
@@ -269,7 +261,6 @@ class ExcelReport:
         :param col: Column Name
         """
         self.df[col].interpolate(method='linear', inplace=True)
-        # return self.df
 
     def __polynomial_interpolate(self, col):
         """
@@ -278,7 +269,6 @@ class ExcelReport:
         :param col: Column Name
         """
         self.df[col].interpolate(method='polynomial', order=2, inplace=True)
-        # return self.df
 
     def __interpolate_padding_forward(self, col):
         """
@@ -287,7 +277,6 @@ class ExcelReport:
         :param col: Column Name
         """
         self.df[col].fillna(method='ffill', inplace=True)
-        # return self.df
 
     def __interpolate_padding_backward(self, col):
         """
@@ -296,7 +285,6 @@ class ExcelReport:
         :param col: Column Name
         """
         self.df[col].fillna(method='bfill', inplace=True)
-        # return self.df
 
     # outlier treatments
     def __remove_outliers(self, col):
@@ -366,16 +354,6 @@ class ExcelReport:
         """
         dist_name, p = stats.normaltest(self.df[col])[0], stats.normaltest(self.df[col])[1]
         if p <= 0.05:
-            # mu = self.df[col].mean()
-            # sigma = self.df[col].std()
-            # scaled_data = (self.df[col] - mu) / sigma
-            # q1 = scaled_data.quantile(0.25)
-            # q3 = scaled_data.quantile(0.75)
-            # iqr = q3 - q1
-            # upper_bound = q3 + 1.5 * iqr
-            # lower_bound = q1 - 1.5 * iqr
-            # capped_data = np.where(scaled_data >= upper_bound, upper_bound, np.where(scaled_data <= lower_bound, lower_bound, scaled_data))
-            # self.df[col] = capped_data * sigma + mu
             q1 = self.df[col].quantile(0.25)
             q3 = self.df[col].quantile(0.75)
             iqr = q3-q1
@@ -383,13 +361,6 @@ class ExcelReport:
             upper_bound = q1+1.5*iqr
             self.df[col] = np.where(self.df[col] >= upper_bound, upper_bound, np.where(self.df[col] <= lower_bound, lower_bound, self.df[col]))
         else:
-            # mu = self.df[col].mean()
-            # sigma = self.df[col].std()
-            # scaled_data = (self.df[col] - mu) / sigma
-            # upper_limit = scaled_data.mean() + (3 * scaled_data.std())
-            # lower_limit = scaled_data.mean() - (3 * scaled_data.std())
-            # capped_data = np.where(scaled_data >= upper_limit, upper_limit, np.where(scaled_data <= lower_limit, lower_limit, scaled_data))
-            # self.df[col] = capped_data * sigma + mu
             upper_limit = self.df[col].mean() + (3 * self.df[col].std())
             lower_limit = self.df[col].mean() - (3 * self.df[col].std())
             self.df[col] = np.where(self.df[col] >= upper_limit, upper_limit, np.where(self.df[col] <= lower_limit, lower_limit, self.df[col]))
@@ -411,16 +382,12 @@ class ExcelReport:
             self.__drop_rows(col_name)
         elif treatments == 'drop column':
             self.__drop_column(col_name)
-        # elif all(word in treatments for word in ['interpolation', 'linear']):
         elif treatments == 'linear interpolation':
             self.__linear_interpolate(col_name)
-        # elif all(word in treatments for word in ['interpolation', 'polynomial']):
         elif treatments == 'polynomial interpolation':
             self.__polynomial_interpolate(col_name)
-        # elif all(word in treatments for word in ['interpolation', 'padding', 'forward']):
         elif treatments == 'forward fill':
             self.__interpolate_padding_forward(col_name)
-        # elif all(word in treatments for word in ['interpolation', 'padding', 'backward']):
         elif treatments == 'backward fill':
             self.__interpolate_padding_backward(col_name)
         elif treatments == 'mode':
@@ -464,22 +431,14 @@ class ExcelReport:
 
         cols_with_one_unique = self.df.columns[self.df.nunique() == 1]
         self.df.drop(cols_with_one_unique, axis=1, inplace=True)
-        # null_percentage = self.df.isnull().sum() / self.df.shape[0] * 100
-        # self.col_to_drop = null_percentage[null_percentage > self.per_to_drop].keys()
-        # cols_with_one_unique = self.df.columns[self.df.nunique() == 1]
-        # self.col_to_drop.extend(list(set(cols_with_one_unique)-set(self.col_to_drop)))
-        # self.df.drop(self.col_to_drop, axis=1, inplace=True)
         if treatment_file is None:
             print('transformation end')
             print()
             return self.df
         else:
             df1 = pd.read_excel(treatment_file)
-            # df1 = pd.read_excel(self.file_name + '_eda_report_2.xlsx')
             treatments_dict_missing = dict(zip(df1['variable'], df1['user action missing']))
             treatments_dict_outlier = dict(zip(df1['variable'], df1['user action outlier']))
-
-            # df_original = self.df.copy()
 
             self.df.apply(lambda col: self.__perform_treatment_missing(col.name, treatments_dict_missing.get(col.name, None)), axis=0)
             self.__df_after_missing_impute = self.df.copy()
@@ -551,25 +510,6 @@ class ExcelReport:
                         else:
                             warnings.warn(f"Value of lag should be an integer", UserWarning)
 
-                        # x = 0
-                        # new = []
-                        # count = 0
-                        # for i in self.df[k]:
-                        #     x = x * adstock + i
-                        #     new.append(x)
-                        #     count += 1
-                        #     if lag == count:
-                        #         break
-                        # weights = []
-                        # for j in range(lag):
-                        #     weights.append(adstock ** (j+1))
-                        # for i in range(lag, len(self.df)):
-                        #     temp = self.df[k].iloc[i]
-                        #     for j in range(lag):
-                        #         temp += weights[j] * self.df[k].iloc[i-j-1]
-                        #     new.append(temp)
-                        # self.df[k] = new
-
                         my_list = self.df[k].tolist()
                         new_list = [0]*lag + my_list
                         v = sliding_window_view(new_list, lag+1)
@@ -605,7 +545,6 @@ class ExcelReport:
                 multiplier, addition = v.split('|')
                 self.df[k] = np.log(self.df[k] * float(multiplier) + float(addition) + (-(self.df[k].min()) if self.df[k].min() < 0 else 0))
 
-            # self.df.to_csv(self.__file_name + '_transformed_data_2.csv', index=False)
             print('transformation end')
             print()
             return self.df, self.__df_original, self.__df_after_missing_impute
@@ -625,7 +564,6 @@ class ExcelReport:
         :param treatment_file: Path to the summary file
         :return: Python code to get the dataframe after all transformations are done
         """
-        # a, b, c = self.transform(treatment_file=treatment_file)
         b = self.__df_original
         c = self.__df_after_missing_impute
         df_num = self.df.select_dtypes(exclude=['object'])
@@ -800,7 +738,6 @@ class ExcelReport:
         bin_edges = best_clf.tree_.threshold
         bin_edges = sorted(set(bin_edges[bin_edges != -2]))
         tree_based_binned_data = self.__value_bin_data(df, column_name, bin_edges)
-        # print(column_name)
         return tree_based_binned_data
 
     def __decile_bin_data(self, df, col, no_of_bins):
@@ -824,8 +761,6 @@ class ExcelReport:
         :param no_of_bins: Maximum number of bins allowed
         :return value_binned_data: Dataframe which contains the binned data
         """
-        # bins = [df[col].min()] + bins + [df[col].max()]
-        # value_binned_data = pd.cut(df[col], bins, include_lowest=True, duplicates='drop')
         value_binned_data = pd.cut(df[col], no_of_bins, duplicates='drop')
         return value_binned_data
 
@@ -841,7 +776,6 @@ class ExcelReport:
         df_new = pd.DataFrame({"column_name": [col] * len(unique_bin_edges), "bin_ranges": unique_bin_edges})
         df_new = df_new.sort_values(by='bin_ranges')
         df_new = df_new.reset_index(drop=True)
-        # df_new = df_new.merge((bin_df_1[col].value_counts() / len(bin_df_1) * 100).reset_index().rename(columns={'index': 'bin_ranges', col: 'count%'}).sort_values(by='bin_ranges').reset_index(drop=True), on='bin_ranges').round(2)
         df_new = df_new.merge((bin_df_1[col].value_counts() / len(bin_df_1) * 100).reset_index().rename(columns={col: 'bin_ranges', 'count': 'count%'}).sort_values(by='bin_ranges').reset_index(drop=True), on='bin_ranges').round(2)
         if self.__dependant_target_variable is not None:
             df_new = df_new.merge(bin_df_1.groupby(col).target.sum().reset_index().rename(columns={col: 'bin_ranges', 'target': 'Event'}), on='bin_ranges')
@@ -921,16 +855,12 @@ class ExcelReport:
                 bin_df.drop(cols_with_one_unique_bin, axis=1, inplace=True)
 
             bin_df_1 = bin_df.copy()
-        # bin_df_1.rename(columns={dep_var: 'target'})
         print('numerical binning end')
         print()
 
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = 'Numerical Columns'
-
-        # headers = ['column_name', 'bin_ranges', 'value_counts', 'Event', 'Mean_DV', 'Index']
-        # self.write_summary_and_charts_to_excel(bin_df, self.col_bin_sumar, bin_df_1, wb, ws, 'bin_ranges', 7, 'H', header_vales=headers)
 
         row_num = 1
         if dep_var is not None:
@@ -1106,7 +1036,7 @@ class ExcelReport:
             return
 
         step = False
-        while step == False:
+        while not step:
             if bin_req > 0:
                 if (bin_req_per / bin_req) > min_thre:
                     step = True
@@ -1159,7 +1089,6 @@ class ExcelReport:
         bin_labels = [f'bin{i}' for i in range(1, k + 1)]
         bin_mapping = {value: bin_labels[i] for i, sublist in enumerate(new_final) for value in sublist}
         bin_mapping[np.nan] = 'binNA'
-        # df[col] = df[col].apply(lambda x: bin_mapping.get(x, x))
         return df[col].apply(lambda x: bin_mapping.get(x, x))
 
     def __naive_ord_cat_bin(self, df, col, ordinal_mapping, max_thre=10, min_thre=5, tolerence=2):
@@ -1255,8 +1184,6 @@ class ExcelReport:
             else:
                 layer -= 1
 
-        # df[col_name] = cluster_labels
-        # df[col_name] = df[col_name].apply(lambda x: f"cluster {x}")
         null_values = df[df[column_name].isnull()].copy()
         df = df.dropna(subset=[column_name])
         df.loc[:, column_name] = cluster_labels
@@ -1277,9 +1204,6 @@ class ExcelReport:
         """
         if ordinal_mapping is None:
             ordinal_mapping = {val: i + 1 for i, val in enumerate(sorted(df[col].unique()))}
-
-        # if df[col].nunique() < 10:
-        #     max_clusters = df[col].nunique()
 
         if df[col].isnull().sum() > 0:
             max_clusters -= 1
@@ -1317,15 +1241,12 @@ class ExcelReport:
         """
         unique_values_in_bins = df_cat.groupby(binned_df_1[col])[col].unique().apply(list)
         unique_values_in_bins = unique_values_in_bins.rename_axis('bin').reset_index()
-        # unique_bin_ranges = pd.Categorical(binned_df_1[col].unique()).sort_values(ascending=True)
         unique_bin_ranges = pd.Categorical(binned_df_1[col].unique())
         uni = binned_df_1[col].nunique()
         numeric_parts = [uni if val == 'binNA' else int(re.findall(r'\d+', val)[0]) for val in unique_bin_ranges]
-        # numeric_parts = [int(re.findall(r'\d+', val)[0]) for val in unique_bin_ranges]
         unique_bin_ranges = unique_bin_ranges[np.argsort(numeric_parts)]
         df_new_cat = pd.DataFrame({"column_name": [col] * len(unique_bin_ranges), "bin ranges": unique_bin_ranges})
         df_new_cat = df_new_cat.merge(unique_values_in_bins.rename(columns={'bin': 'bin ranges', col: 'values in bin'}))
-        # df_new_cat = df_new_cat.merge((binned_df_1[col].value_counts() / len(binned_df_1) * 100).reset_index().rename(columns={'index': 'bin ranges', col: 'count%'}).sort_values(by='bin ranges').reset_index(drop=True), on='bin ranges').round(2)
         df_new_cat = df_new_cat.merge((binned_df_1[col].value_counts() / len(binned_df_1) * 100).reset_index().rename(columns={col: 'bin ranges', 'count': 'count%'}).sort_values(by='bin ranges').reset_index(drop=True), on='bin ranges').round(2)
         if self.__dependant_target_variable is not None:
             df_new_cat = df_new_cat.merge(binned_df_1.groupby(col).target.sum(numeric_only=True).reset_index().rename(columns={col: 'bin ranges', 'target': 'Event'}), on='bin ranges')
@@ -1402,15 +1323,6 @@ class ExcelReport:
                 combo_chart.set_categories(bin_ranges)
                 line_chart.add_data(index, titles_from_data=True)
                 line_chart.set_categories(bin_ranges)
-
-                #     this code is used to make the maximum of the both y-axes same
-                #     combo_chart.y_axis.scaling.min = 0
-                #     line_chart.y_axis.scaling.min = 0
-                #     max_value_counts = max(df_new['value_count'])
-                #     max_index = max(df_new['Index'])
-                #     max_value = max(max_value_counts, max_index)
-                #     combo_chart.y_axis.scaling.max = max_value
-                #     line_chart.y_axis.scaling.max = max_value
 
                 combo_chart += line_chart
                 combo_chart.legend = None
@@ -1507,7 +1419,6 @@ class ExcelReport:
             df_org_cat = df_org_cat.rename(columns={dependant_target_variable: 'target'})
             dependant_target_variable = 'target'
         df_cat = df_org_cat.select_dtypes(include=['object'])
-        # df_cat = pd.concat([df_cat, df_org_cat['target']], axis=1)
 
         # remove columns with only one unique values
         unique_counts = df_cat.nunique()
@@ -1536,10 +1447,6 @@ class ExcelReport:
                 binned_df_nominal = df_nominal.progress_apply(lambda x: self.__naive_cat_bin(df_nominal, x.name, max_thre, min_thre, tolerence, flag))
                 binned_df_nominal = binned_df_nominal.dropna(axis=1, how='all')
                 binned_df_nominal = binned_df_nominal.astype('category')
-
-                # for col in df_nominal.columns:
-                #     self.naive_cat_bin(df_nominal, col, max_thre, min_thre, tolerence)
-                # binned_df_nominal = df_nominal.copy()
 
                 cols_with_one_unique_bin = binned_df_nominal.columns[binned_df_nominal.nunique() == 1]
                 binned_df_nominal.drop(cols_with_one_unique_bin, axis=1, inplace=True)
@@ -1590,10 +1497,6 @@ class ExcelReport:
                 binned_df_nominal = binned_df_nominal.dropna(axis=1, how='all')
                 binned_df_nominal = binned_df_nominal.astype('category')
 
-                # for col in df_nominal.columns:
-                #     self.naive_cat_bin(df_nominal, col, max_thre, min_thre, tolerence)
-                # binned_df_nominal = df_nominal.copy()
-
                 cols_with_one_unique_bin = binned_df_nominal.columns[binned_df_nominal.nunique() == 1]
                 binned_df_nominal.drop(cols_with_one_unique_bin, axis=1, inplace=True)
 
@@ -1616,10 +1519,17 @@ class ExcelReport:
                 binned_df_ordinal = df_ordinal.copy()
 
                 if ordinal_binning == 'hierarchical':
-                    binned_df_ordinal = df_ordinal.apply(lambda x: self.__hierarchical_clustering(df_ordinal, x.name, eval(the_ordinal.loc[the_ordinal.variable == x.name, 'user action ordinal'].values[0]), min_cluster_size=min_cluster_size, max_clusters=max_clusters))
+                    binned_df_ordinal = pd.DataFrame()
+
+                    for column in df_ordinal.columns:
+                        ordinal_value = \
+                        the_ordinal.loc[the_ordinal['variable'] == column, 'user action ordinal'].values[0]
+                        binned_column = self.__hierarchical_clustering(df_ordinal, column, eval(ordinal_value),
+                                                                       min_cluster_size=min_cluster_size,
+                                                                       max_clusters=max_clusters)
+                        binned_df_ordinal[column] = binned_column
                 elif ordinal_binning == 'kprototype':
                     binned_df_ordinal = pd.concat([self.__kprototype(df_ordinal, col, eval(the_ordinal.loc[the_ordinal['variable'] == col, 'user action ordinal'].values[0]), max_clusters=max_clusters) for col in df_ordinal], axis=1).reset_index(drop=True)
-                    # binned_df_ordinal = df_ordinal.apply(lambda x: self.__kprototype(df_ordinal, x.name, eval(the_ordinal.loc[the_ordinal.variable == x.name, 'user action ordinal'].values[0]), max_clusters=no_of_bins))
                 elif ordinal_binning == 'no binning':
                     for col in binned_df_ordinal:
                         binned_df_ordinal = self.__apply_ordinal_normal(col, the_ordinal, binned_df_ordinal)
@@ -1694,7 +1604,6 @@ class ExcelReport:
             excel.Visible = True
             cwd = os.getcwd()
             cwd = cwd + '\profiled_data.xlsx'
-            # wb = excel.Workbooks.Open(r'C:\Users\PrudhvitejaCherukuri\PycharmProjects\packagetest\profiled_data.xlsx')
             wb = excel.Workbooks.Open(r'' + cwd)
             sheet = wb.Worksheets('Summary')
 
@@ -1855,10 +1764,12 @@ class ExcelReport:
             wb.Save()
             # excel.Quit()
 
-    def variable_profiling(self, summary_path=None, numerical_binning=None, dep_var=None, depth=None, no_of_bins=None, ordinal_binning_type='kprototype', max_threshold=10, min_threshold=5, tolerence=2, flag='ignore', min_cluster_size=0.05, max_clusters=10):
+    def variable_profiling(self, summary_path=None, numerical_binning=None, dep_var=None, depth=None, no_of_bins=None, ordinal_binning_type='naive', max_threshold=10, min_threshold=5, tolerence=2, flag='ignore', min_cluster_size=0.05, max_clusters=10):
         """
         This function calls all the required function to perform variable profiling
 
+        :param min_cluster_size: minimum cluster size in hierarchical clustering
+        :param max_clusters: maximum number of clusters allowed in hierarchical clustering
         :param flag: Flag
         :param tolerence: Tolerance
         :param min_threshold: Minimum threshold
